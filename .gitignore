@@ -7,7 +7,6 @@
 ### End of Jetbrains Stuf ###
 ### Django ###
 media/
-static/
 */migrations/
 Platzigram/settings.py
 *.log
