@@ -1,0 +1,16 @@
+{% extends 'users/base.html' %}
+{% block title %}Iniciar Sesion{% endblock %}
+
+{% block content %}
+    {% if 'error' in request.GET %}
+        <p class="alert alert-danger">Tu usuario o contraseña no son validos.</p>
+    {% endif %}
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="form-control" type="text" name="username" placeholder="Nombre de usuario:">
+            <input  class="form-control" type="password" name="password" placeholder="Contraseña:">
+            <button class="btn btn-primary btn-block" type="submit">Iniciar sesion</button>
+        </div>
+    </form>
+{% endblock %}

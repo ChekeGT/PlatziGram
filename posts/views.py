@@ -1,6 +1,7 @@
 """Post app, views module."""
 # Django
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 #Utilities
 from datetime import datetime
@@ -40,6 +41,7 @@ posts = [
 ]
 
 
+@login_required()
 def post_list(request):
     """List existing posts."""
     global posts
