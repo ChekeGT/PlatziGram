@@ -1,8 +1,9 @@
 """Users app views module."""
 # Django
-
 from django.shortcuts import render, reverse, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
+from django.contrib.auth.decorators import login_required
+
 
 def login_view(request):
     """Login view."""
@@ -16,3 +17,10 @@ def login_view(request):
         else:
             return redirect(reverse('login') + '?error')
     return render(request, 'users/login.html')
+
+
+@login_required()
+def logout_view(request):
+    logout(request)
+
+    return redirect('login')
