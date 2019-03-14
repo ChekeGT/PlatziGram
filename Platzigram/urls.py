@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from posts.views import post_list
-from users.views import login_view, logout_view, signup_view
+from users.views import login_view, logout_view, signup_view, update_profile_view
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('signup/', signup_view, name='signup'),
+    path('update_profile/', update_profile_view, name='update_profile'),
 ]
 
 if settings.DEBUG:

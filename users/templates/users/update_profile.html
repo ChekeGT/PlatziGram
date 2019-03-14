@@ -1,0 +1,10 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Actualizar perfil @{{request.user.username}}{% endblock %}
+
+{% block content %}
+    {% if 'not_profile_picture' in request.GET %}
+        <p class="alert alert-danger">Por favor, agrega una foto de perfil</p>
+    {% endif %}
+    <h1>@{{ request.user.username }}</h1>
+{% endblock %}

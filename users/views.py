@@ -73,3 +73,8 @@ def signup_view(request):
         user.save()
         return redirect('login')
     return render(request, 'users/signup.html')
+
+
+def update_profile_view(request):
+    """View that allow users to update them profiles"""
+    return render(request, 'users/update_profile.html')
