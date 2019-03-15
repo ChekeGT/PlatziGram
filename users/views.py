@@ -13,8 +13,9 @@ from django.db.utils import IntegrityError
 
 from .models import User
 
-# Exceptions
+# Forms
 
+from .forms import UpdateProfileForm
 
 class UserCantBeCreated(Exception):
     """Exception for raise when a user, cant be created"""
@@ -77,4 +78,17 @@ def signup_view(request):
 
 def update_profile_view(request):
     """View that allow users to update them profiles"""
-    return render(request, 'users/update_profile.html')
+    if request.method == 'POST':
+        user = request.user
+        form = UpdateProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = form.cleaned_data
+            user.website = data['website']
+            user.bio = data['biography']
+            user.phone_number = data['phone_number']
+            user.picture = data['picture']
+            user.save()
+            return redirect(reverse('update_profile') + '?updated')
+    else:
+        form = UpdateProfileForm()
+    return render(request, 'users/update_profile.html', {'form': form})

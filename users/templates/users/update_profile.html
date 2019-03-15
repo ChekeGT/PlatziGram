@@ -1,10 +1,96 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
+{% load static %}
 
-{% block title %}Actualizar perfil @{{request.user.username}}{% endblock %}
+{% block title %}@{{ request.user.username }} | Actualizar Perfil.{% endblock %}
 
 {% block content %}
-    {% if 'not_profile_picture' in request.GET %}
-        <p class="alert alert-danger">Por favor, agrega una foto de perfil</p>
-    {% endif %}
-    <h1>@{{ request.user.username }}</h1>
+
+<div class="container">
+
+    <div class="row justify-content-md-center">
+        <div class="col-6 p-4" id="profile-box">
+
+            <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if 'updated' in request.GET %}
+                    <p class="alert alert-success">Tu perfil se actualizo correctamente.</p>
+                {% endif %}
+
+                <div class="media">
+                    {% if user.picture %}
+                        <img  alt="@{{ user.username }} profile picture" src="{{ user.picture.url }}" class="rounded-circle" height="50" />
+                    {% else%}
+                        <img alt="@{{ user.username }} profile picture" src="{% static 'img/default-profile.png' %}" class="rounded-circle" height="50" />
+                    {% endif %}
+
+                    <div class="media-body">
+                        <h5 class="ml-4">@{{ user.username }} | {{ user.get_full_name }}</h5>
+                        <p class="ml-4"><input type="file" name="picture"></p>
+                    </div>
+                </div>
+             {% if form.picture.errors %}
+                        <div class=" alert alert-danger invalid-feedback" style="display: block !important;">
+                            {% for error in form.picture.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                 {% endif %}
+                <hr><br>
+
+
+                <div class="form-group">
+                    <label>Sitio Web</label>
+                    <input
+                        class="form-control {% if form.website.errors %}is-invalid{% endif %}"
+                        type="url"
+                        name="website"
+                        placeholder="Sitio web:"
+                        value="{% if form.website.errors %}{{ form.website.value }}{% else %}{{ user.website }}{% endif %}"
+                    />
+                     {% if form.website.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.website.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label>Biografia</label>
+                    <textarea class="form-control {% if form.biography.errors %}is-invalid{% endif %}" name="biography">{% if form.biography.errors %}{{ form.biography.value }}{% else %}{{ user.bio }}{% endif %}</textarea>
+                     {% if form.biography.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.biography.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label>Numero de Telefono</label>
+                    <input
+                        class="form-control {% if form.phone_number.errors %} is-invalid{% endif %}"
+                        type="text"
+                        name="phone_number"
+                        placeholder="Numero de Telefono:"
+                        value="{% if form.phone_number.errors %}{{ form.phone_number.value }}{% else %}{{ user.phone_number }}{% endif %}"
+                    />
+                    {% if form.phone_number.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.phone_number.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block mt-5">Actualizar Perfil</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
