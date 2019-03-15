@@ -15,14 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from posts.views import post_list
+from posts.views import post_list, create_post
 from users.views import login_view, logout_view, signup_view, update_profile_view
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('posts/', post_list, name='feed'),
+
+    path('', post_list, name='feed'),
+    path('posts/new/', create_post, name='create_post'),
+
+
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('signup/', signup_view, name='signup'),
