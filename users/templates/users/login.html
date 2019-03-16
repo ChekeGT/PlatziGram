@@ -13,6 +13,9 @@
         <div class="form-group">
             <input  class="form-control" type="password" name="password" placeholder="Contraseña:">
         </div>
-            <button class="btn btn-primary btn-block" type="submit">Iniciar sesion</button>
+        
+        <p class="text">No tienes una cuenta? <a class="alert-link" href="{% url 'signup' %}">Crear una</a></p>
+
+        <button class="btn btn-primary btn-block" type="submit">Iniciar sesion</button>
     </form>
 {% endblock %}
