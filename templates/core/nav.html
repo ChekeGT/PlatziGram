@@ -10,7 +10,7 @@
             <ul class="navbar-nav mr-auto">
 
                 <li class="nav-item">
-                    <a href="{% url 'update_profile' %}">
+                    <a href="{% url 'profile_detail' request.user.username %}">
                         <img
                                 alt="{{ request.user.get_full_name }}"
                                 src="{% if request.user.picture %}{{ request.user.picture.url }}{% else %} {% static 'img/default-profile.png' %}{% endif %}"

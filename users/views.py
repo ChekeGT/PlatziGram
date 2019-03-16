@@ -4,9 +4,38 @@
 from django.shortcuts import render, reverse, redirect
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import DetailView
+
+# Models
+from .models import User
+from posts.models import Post
 
 # Forms
 from .forms import UpdateProfileForm, SignupForm
+
+
+class ProfileDetailView(LoginRequiredMixin, DetailView):
+    """Class based view that manages the detail of a user profile."""
+    template_name = 'users/profile_detail.html'
+    model = User
+    queryset = User.objects.all()
+    slug_field = 'username'
+    slug_url_kwarg = 'username'
+
+    def get_context_data(self, **kwargs):
+        """
+            Insert the posts created by the user
+            in the context data tho show them
+            on the template.
+        """
+        context = super(ProfileDetailView, self).get_context_data()
+        user = context['user']
+
+        posts = Post.objects.filter(user=user)
+        context['posts'] = posts
+
+        return context
 
 
 def login_view(request) -> 'Http Response':
