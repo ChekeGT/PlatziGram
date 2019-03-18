@@ -3,7 +3,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy
 
 # Forms
 from .forms import CreatePostForm
@@ -18,19 +19,18 @@ class PostListView(LoginRequiredMixin, ListView):
     ordering = ('-created',)
     template_name = 'posts/feed.html'
     context_object_name = 'posts'
+    paginate_by = 30
 
 
-@login_required
-def create_post(request) -> 'Http Response':
-    if request.method == 'POST':
-        form = CreatePostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('feed')
-    else:
-        form = CreatePostForm()
+class CreatePostView(LoginRequiredMixin, CreateView):
+    """Manages the view with which a user can create a post."""
 
-    return render(request, 'posts/create.html', {'form': form})
+    template_name = 'posts/create.html'
+    model = Post
+    queryset = Post.objects.all()
+    form_class = CreatePostForm
+    context_object_name = 'post'
+    success_url = reverse_lazy('feed')
 
 
 class PostDetailView(LoginRequiredMixin, DetailView):
@@ -38,5 +38,5 @@ class PostDetailView(LoginRequiredMixin, DetailView):
     model = Post
     template_name = 'posts/detail.html'
     context_object_name = 'post'
-    slug_field = 'title'
-    slug_url_kwarg = 'title'
+    slug_field = 'pk'
+    slug_url_kwarg = 'pk'
