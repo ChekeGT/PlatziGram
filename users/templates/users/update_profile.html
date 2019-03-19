@@ -59,7 +59,7 @@
 
                 <div class="form-group">
                     <label>Biografia</label>
-                    <textarea class="form-control {% if form.biography.errors %}is-invalid{% endif %}" name="biography">{% if form.biography.errors %}{{ form.biography.value }}{% else %}{{ user.bio }}{% endif %}</textarea>
+                    <textarea class="form-control {% if form.biography.errors %}is-invalid{% endif %}" name="bio">{% if form.biography.errors %}{{ form.biography.value }}{% else %}{{ user.bio }}{% endif %}</textarea>
                      {% if form.biography.errors %}
                         <div class="invalid-feedback">
                             {% for error in form.biography.errors %}

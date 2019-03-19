@@ -2,17 +2,18 @@
 
 # Django
 from django.shortcuts import render, reverse, redirect
+from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import DetailView
+from django.views.generic import DetailView, FormView, UpdateView
 
 # Models
 from .models import User
 from posts.models import Post
 
 # Forms
-from .forms import UpdateProfileForm, SignupForm
+from .forms import SignupForm
 
 
 class ProfileDetailView(LoginRequiredMixin, DetailView):
@@ -59,33 +60,34 @@ def logout_view(request) -> 'Http Response':
     return redirect('login')
 
 
-def signup_view(request):
-    """Signup View."""
-    if request.method == 'POST':
-        form = SignupForm(request.POST)
+class SignupView(FormView):
+    """View that manages the register of new users in the website."""
 
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = SignupForm()
-    return render(request, 'users/signup.html', {'form':form})
+    template_name = 'users/signup.html'
+    form_class = SignupForm
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form) -> 'Http Response Redirect':
+        """
+        If the form is valid this function will be executed and will save the form.
+        After that it will redirect the user to the value in success_url.
+        """
+        form.save()
+        return super(SignupView, self).form_valid(form)
 
 
-@login_required
-def update_profile_view(request):
-    """View that allow users to update them profiles"""
-    if request.method == 'POST':
-        user = request.user
-        form = UpdateProfileForm(request.POST, request.FILES)
-        if form.is_valid():
-            data = form.cleaned_data
-            user.website = data['website']
-            user.bio = data['biography']
-            user.phone_number = data['phone_number']
-            user.picture = data['picture']
-            user.save()
-            return redirect(reverse('update_profile') + '?updated')
-    else:
-        form = UpdateProfileForm()
-    return render(request, 'users/update_profile.html', {'form': form})
+class UpdateProfileView(UpdateView):
+    """Manages the view with which a user can update their profile."""
+
+    template_name = 'users/update_profile.html'
+    model = User
+    fields = ['website', 'bio', 'phone_number', 'picture']
+
+    def get_object(self, queryset=None) -> 'User':
+        """Returns the user that is making the request."""
+        return self.request.user
+
+    def get_success_url(self) -> 'str':
+        """Returns a reversed url, to the users profile template."""
+        username = self.object.username
+        return reverse_lazy('profile_detail', args=[username])

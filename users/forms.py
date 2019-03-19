@@ -67,11 +67,3 @@ class SignupForm(forms.Form):
         data.pop('password_confirmation')
 
         User.objects.create_user(**data)
-
-
-class UpdateProfileForm(forms.Form):
-    """Form class used for updating a profile."""
-    picture = forms.ImageField(required=True)
-    website = forms.URLField(max_length=200)
-    biography = forms.CharField(max_length=1000)
-    phone_number = forms.CharField(max_length=20)
