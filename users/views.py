@@ -1,12 +1,10 @@
 """Users app views module."""
 
 # Django
-from django.shortcuts import render, reverse, redirect
 from django.urls import reverse_lazy
-from django.contrib.auth import authenticate, login,logout
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, FormView, UpdateView
+from django.contrib.auth.views import LoginView, LogoutView
 
 # Models
 from .models import User
@@ -39,25 +37,14 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
         return context
 
 
-def login_view(request) -> 'Http Response':
-    """Login view."""
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user:
-            login(request, user)
-            return redirect('feed')
-        else:
-            return redirect(reverse('login') + '?error')
-    return render(request, 'users/login.html')
+class PlatzigramLoginView(LoginView):
+    """Class Based View that manages the login of the users."""
+    template_name = 'users/login.html'
 
 
-@login_required
-def logout_view(request) -> 'Http Response':
-    logout(request)
-
-    return redirect('login')
+class PlatzigramLogoutView(LoginRequiredMixin, LogoutView):
+    """Class Based View that manages the logout of the users."""
+    pass
 
 
 class SignupView(FormView):
@@ -76,7 +63,7 @@ class SignupView(FormView):
         return super(SignupView, self).form_valid(form)
 
 
-class UpdateProfileView(UpdateView):
+class UpdateProfileView(LoginRequiredMixin, UpdateView):
     """Manages the view with which a user can update their profile."""
 
     template_name = 'users/update_profile.html'
