@@ -40,6 +40,7 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
 class PlatzigramLoginView(LoginView):
     """Class Based View that manages the login of the users."""
     template_name = 'users/login.html'
+    redirect_authenticated_user = True
 
 
 class PlatzigramLogoutView(LoginRequiredMixin, LogoutView):
