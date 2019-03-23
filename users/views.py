@@ -22,6 +22,26 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
     slug_field = 'username'
     slug_url_kwarg = 'username'
 
+    def get(self, request, *args, **kwargs):
+        """
+         Manages the necessary processes to follow
+         or stop following a profile,
+         besides that inherits its parent functionality
+         and passing that, follows the same normal
+         operation, which means return the render.
+         """
+        profile_user = self.get_object()
+        request_user = request.user
+        if 'follow' in request.GET:
+            profile_user.followers.add(request.user)
+            request_user.following.add(profile_user)
+
+        elif 'unfollow' in request.GET:
+            profile_user.followers.remove(request.user)
+            request_user.following.remove(profile_user)
+
+        return super(ProfileDetailView, self).get(request, args, kwargs)
+
     def get_context_data(self, **kwargs):
         """
             Insert the posts created by the user

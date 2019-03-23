@@ -21,6 +21,27 @@ class PostListView(LoginRequiredMixin, ListView):
     context_object_name = 'posts'
     paginate_by = 30
 
+    def get_queryset(self):
+        """
+        Modify the queryset of posts either by showing all
+        in case we don't follow anyone, or by showing only
+        our own and those of the people we follow.
+        """
+        user = self.request.user
+
+        posts = super(PostListView, self).get_queryset()
+        own_posts = posts.filter(user=user)
+
+        following = user.following.all()
+        if following:
+
+            following_posts = posts.filter(user__in=following)
+            if following_posts:
+
+                return following_posts + own_posts
+
+        return posts
+
 
 class CreatePostView(LoginRequiredMixin, CreateView):
     """Manages the view with which a user can create a post."""

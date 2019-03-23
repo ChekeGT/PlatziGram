@@ -27,24 +27,52 @@
                             Editar Perfil
                         </a>
                     {% else %}
-                        <a
-                            href=""
-                            class="ml-5 btn btn-sm btn-primary"
-                        >
-                            Seguir
-                        </a>
+                        {% if request.user in user.followers.all %}
+                            <a
+                                    href="{% url 'profile_detail' user.username %}?unfollow"
+                                    class="btn btn-sm btn-primary"
+                                    style="background: #fafafa;color: #000;"
+                            >
+                                Siguiendo
+                            </a>
+                        {% else %}
+                            <a
+                                href="{% url 'profile_detail' user.username %}?follow"
+                                class="ml-5 btn btn-sm btn-primary"
+                            >
+                                Seguir
+                            </a>
+                        {% endif %}
                     {% endif %}
                 </h2>
 
                 <div class="row mt-2" style="font-size: 1.2em">
                     <div class="col-sm-4">
-                        <b>{{ user.posts_count }}785</b> posts
+                        <b>
+                            {{ posts|length }}
+                        </b>
+                         {% if posts|length == 1 %}
+                             Post
+                         {% else %}
+                             Posts
+                         {% endif %}
                     </div>
                     <div class="col-sm-4">
-                        <b>{{ user.followers }}1,401</b> followers
+                        <b>{{ user.followers.all|length }} </b>
+                        {% if user.followers.all|length == 1 %}
+                             Seguidor
+                         {% else %}
+                             Seguidores
+                         {% endif %}
                     </div>
                     <div class="col-sm-4">
-                        <b>{{ user.following }}491</b> following
+                        Siguiendo a :
+                        <b>{{ user.following.all|length }}</b>
+                        {% if user.following.all|length == 1 %}
+                             Persona
+                         {% else %}
+                             Personas
+                         {% endif %}
                     </div>
                 </div>
                 <div class="row mt-4">
