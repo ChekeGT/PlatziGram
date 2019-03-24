@@ -24,29 +24,39 @@ class PostListView(LoginRequiredMixin, ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        """
-        Modify the queryset of posts either by showing all
-        in case we don't follow anyone, or by showing only
-        our own and those of the people we follow.
-        """
-        user = self.request.user
+        """Returns the list of posts filtered."""
 
-        posts = super(PostListView, self).get_queryset()
+        posts = self.filter_posts(super(PostListView, self).get_queryset())
+
         for post in posts:
             post.likes = number_of_likes(post)
-
             # Boolean that indicates if the request user has already liked this post.
-            post.liked_by_me = already_liked(user, post)
+            post.liked_by_me = already_liked(self.request.user, post)
 
+        return posts
+
+    def filter_posts(self, posts):
+        """
+            Modify the queryset of posts either by showing all
+            in case we don't follow anyone, or by showing only
+            our own and those of the people we follow.
+         """
+        user = self.request.user
         own_posts = posts.filter(user=user)
 
         following = user.following.all()
         if following:
 
             following_posts = posts.filter(user__in=following)
-            if following_posts:
+            if following_posts and own_posts:
 
-                return following_posts + own_posts
+                posts = [following_posts, own_posts]
+
+            elif following_posts:
+                posts = following_posts
+
+            elif own_posts:
+                posts = own_posts
 
         return posts
 
