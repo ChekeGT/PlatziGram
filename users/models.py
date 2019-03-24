@@ -16,4 +16,43 @@ class User(AbstractUser):
     following = models.ManyToManyField('self')
 
     def __str__(self):
+        """Returns the username."""
+
         return self.username
+
+    def follow(self, user):
+        """Function that allows this model to follow an user.
+        Receive two parameters:
+            -self --> The user who called this function and who is going to follow another.
+            -user --> The user who will start to be followed.
+        """
+
+        try:
+
+            self.following.add(user)
+            user.followers.add(self)
+
+        except Exception as e:
+
+            print(type(e).__name__)
+            return False
+        else:
+            return True
+
+    def unfollow(self, user):
+        """Function that allows this model to unfollow an user.
+        Receive two parameters:
+            -self --> The user who called this function to stop following another.
+            -user --> The user who is going to stop being followed
+        """
+
+        try:
+            self.following.remove(user)
+            user.followers.remove(self)
+
+        except Exception as e:
+            print(type(e).__name__)
+            return False
+
+        else:
+            return True

@@ -30,15 +30,16 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
          and passing that, follows the same normal
          operation, which means return the render.
          """
+
         profile_user = self.get_object()
         request_user = request.user
-        if 'follow' in request.GET:
-            profile_user.followers.add(request.user)
-            request_user.following.add(profile_user)
 
-        elif 'unfollow' in request.GET:
-            profile_user.followers.remove(request.user)
-            request_user.following.remove(profile_user)
+        if request.method == 'GET':
+            if 'follow' in request.GET:
+                request_user.follow(profile_user)
+
+            elif 'unfollow' in request.GET:
+                request_user.unfollow(profile_user)
 
         return super(ProfileDetailView, self).get(request, args, kwargs)
 
