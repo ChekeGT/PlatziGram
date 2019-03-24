@@ -11,11 +11,36 @@
     <img style="width: 100%;" src="{{ post.photo.url }}" alt="{{ post.title }}">
     </a>
     <p class="mt-1 ml-2" >
-        <a href="" style="color: #000; font-size: 20px;">
-            <i class="far fa-heart"></i>
-        </a> 30 likes
+
+        <a href="#{{ post.pk }}" style="color: #000; font-size: 20px;">
+            {% if post.liked_by_me %}
+                <i id="like-hearth-{{ post.pk }}" class="far fa-heart"></i>
+            {% else %}
+                <i id="like-hearth-{{ post.pk }}" class="fas fa-heart-broken"></i>
+            {% endif %}
+        </a>
+        <small id="like-counter-{{ post.pk }}" style="color: #000; font-size: 17px; text-decoration: none;">{{ post.likes }}</small>
+
+        <small id="like-plural-or-singular-{{ post.pk }}" href="" style="color: #000; font-size: 17px; text-decoration: none;">
+            {% if post.likes == 1 %} like{% else %} likes{% endif %}
+        </small>
     </p>
     <p class="ml-2 mt-0 mb-2">
         <b>{{ post.title }}</b> - <small>{{ post.created }}</small>
     </p>
+
+    <script type="text/javascript">
+        {# post.liked by me indicates if the request.user has already give a like to this post.#}
+        const like_hearth_{{ post.pk }} = document.getElementById('like-hearth-{{ post.pk }}');
+        const like_counter_{{ post.pk }} = document.getElementById('like-counter-{{ post.pk }}');
+        const like_plural_or_singular_{{ post.pk }} = document.getElementById('like-plural-or-singular-{{ post.pk }}');
+        const url_{{ post.pk }} = `{% url 'like_post' post.pk %}`;
+
+        addLikeOrUnlikeListener(
+            like_hearth_{{ post.pk }},
+            like_counter_{{ post.pk }},
+            like_plural_or_singular_{{ post.pk }},
+            url_{{ post.pk }}
+        )
+    </script>
 </div>

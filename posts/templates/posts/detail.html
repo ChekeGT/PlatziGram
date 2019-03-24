@@ -1,10 +1,14 @@
 {% extends "core/base.html" %}
 
 {% block title %}Platzigram{% endblock%}
+
+{% load static %}
+
 {% block content %}
 
     <div class="container">
         <div class="row">
+            <script type="text/javascript" src="{% static 'js/like_publication.js' %}"></script>
             {% include "posts/includes/post_card.html" %}
         </div>
     </div>

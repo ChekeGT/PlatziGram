@@ -22,3 +22,10 @@ class Post(models.Model):
     def __str__(self):
         """Return the post title and the creator username."""
         return f'{self.title} by @{self.user.username}'
+
+
+class Like(models.Model):
+    """Like model declaration."""
+
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)

@@ -2,8 +2,10 @@
 
 {% block title %}Platzigram{% endblock%}
 
+{% load static %}
 {% block content %}
     <div class="row">
+        <script type="text/javascript" src="{% static 'js/like_publication.js' %}"></script>
         {% for post in posts %}
                 {% include 'posts/includes/post_card.html' %}
             {% endfor %}

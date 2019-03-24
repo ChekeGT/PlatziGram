@@ -1,16 +1,18 @@
 """Post app, views module."""
 # Django
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, RedirectView
 from django.urls import reverse_lazy
+from django.http import JsonResponse
 
 # Forms
 from .forms import CreatePostForm
 
 # Models
-from .models import Post
+from .models import Post, Like
+
+# Utilities
+from .utilities import already_liked, number_of_likes
 
 
 class PostListView(LoginRequiredMixin, ListView):
@@ -30,6 +32,12 @@ class PostListView(LoginRequiredMixin, ListView):
         user = self.request.user
 
         posts = super(PostListView, self).get_queryset()
+        for post in posts:
+            post.likes = number_of_likes(post)
+
+            # Boolean that indicates if the request user has already liked this post.
+            post.liked_by_me = already_liked(user, post)
+
         own_posts = posts.filter(user=user)
 
         following = user.following.all()
@@ -61,3 +69,47 @@ class PostDetailView(LoginRequiredMixin, DetailView):
     context_object_name = 'post'
     slug_field = 'pk'
     slug_url_kwarg = 'pk'
+
+    def get_object(self, queryset=None):
+        """Returns the post object by default but it adds the number of like it has."""
+        post = super(PostDetailView, self).get_object(queryset)
+        post.likes = number_of_likes(post)
+
+        # Boolean that indicates if the request user has already liked this post.
+        post.liked_by_me = already_liked(self.request.user, post)
+
+        return post
+
+
+class LikePostView(LoginRequiredMixin, RedirectView):
+    """View that makes the like process asynchronous"""
+
+    def get(self, request, *args, **kwargs):
+        """
+        If a publication is'nt liked by a user it
+        likes it and returns a JsonResponse.
+        """
+        json_response = {}
+        try:
+            post_pk = kwargs['pk']
+            user = self.request.user
+
+            post = Post.objects.get(pk=post_pk)
+
+            if already_liked(user=user, post=post):
+                Like.objects.get(post=post, user=user).delete()
+                json_response['liked'] = False
+                json_response['unliked'] = True
+
+            else:
+                Like.objects.create(post=post, user=user)
+                json_response['liked'] = True
+                json_response['unliked'] = False
+
+        except Exception as e:
+            json_response['status'] = 400
+
+        else:
+            json_response['status'] = 200
+
+        return JsonResponse(json_response)
