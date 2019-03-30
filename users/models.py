@@ -12,8 +12,7 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     picture = models.ImageField(blank=True, null=True, upload_to='users/pictures')
 
-    followers = models.ManyToManyField('self')
-    following = models.ManyToManyField('self')
+    followers = models.ManyToManyField('self', symmetrical=False,related_name='following')
 
     def __str__(self):
         """Returns the username."""
